@@ -1,0 +1,7 @@
+*.db
+*.sql
+*.zip
+*.bak
+__pycache__/
+*.pyc
+.DS_Store
