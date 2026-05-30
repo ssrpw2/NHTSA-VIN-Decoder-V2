@@ -603,7 +603,14 @@ class VinDecoder:
 
             formula = conv["formula"].replace("#x#", from_item.attribute_id)
             try:
-                val = str(eval(formula))  # noqa: S307 — formulas are from trusted DB
+                raw = eval(formula)  # noqa: S307 — formulas are from trusted DB
+                if isinstance(raw, float):
+                    if raw == int(raw) and abs(raw) < 1e15:
+                        val = f"{raw:.1f}"
+                    else:
+                        val = f"{raw:.14g}"
+                else:
+                    val = str(raw)
             except Exception:
                 val = "0"
 
@@ -767,7 +774,10 @@ class VinDecoder:
 
             group = elem.get("groupname") or ""
             name = elem.get("name", f"Element_{item.element_id}")
-            value = (item.value or "").replace("\t", " ").replace("\r", " ").replace("\n", " ")
+            value = (item.value or "")
+            value = value.replace("\\r\\n", " ").replace("\\r", " ").replace("\\n", " ")
+            value = value.replace("\r\n", " ").replace("\r", " ").replace("\n", " ").replace("\t", " ")
+            value = " ".join(value.split()).strip()
 
             group_order = GROUP_ORDER.get(group, 99)
             output_pairs.append((group_order, item.element_id, name, value))
