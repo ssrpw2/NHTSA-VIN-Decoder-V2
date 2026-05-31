@@ -123,7 +123,7 @@ def _keys_match(pattern_keys: str, vin_keys: str) -> bool:
     if "[" in pattern_keys:
         regex = _sqlwild_to_regex(pattern_keys)
         return bool(re.match(regex, vin_keys))
-    sql_like = pattern_keys.replace("*", ".")
+    sql_like = pattern_keys.replace("*", ".").replace("|", r"\|")
     return bool(re.match("^" + sql_like, vin_keys))
 
 
